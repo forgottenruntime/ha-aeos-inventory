@@ -1,0 +1,61 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to InventoryAPI",
+        "description": "Connect to your Nedap AEOS Inventory API service.",
+        "data": {
+          "host": "Host or IP",
+          "port": "Port",
+          "api_key": "API key (X-API-Key)",
+          "use_ssl": "Use HTTPS",
+          "verify_ssl": "Verify TLS certificate"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot reach the InventoryAPI service.",
+      "invalid_auth": "The API key was rejected."
+    },
+    "abort": {
+      "already_configured": "This InventoryAPI host is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling settings",
+        "data": {
+          "scan_interval": "Refresh interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ip_address":            { "name": "IP address" },
+      "mac":                   { "name": "MAC address" },
+      "aeos_version":          { "name": "AEOS version" },
+      "firmware_name":         { "name": "Firmware name" },
+      "firmware_version":      { "name": "Firmware version" },
+      "firmware_date":         { "name": "Firmware date" },
+      "boot_firmware_version": { "name": "Boot firmware version" },
+      "cb_type":               { "name": "Controller board" },
+      "model":                 { "name": "Model" },
+      "ntp_server":            { "name": "NTP server" },
+      "aeserver_host_name":    { "name": "AEserver host" },
+      "memory_free_kb":        { "name": "Memory free" },
+      "memory_total_kb":       { "name": "Memory total" },
+      "disk_free_kb":          { "name": "Disk free" },
+      "uptime_seconds":        { "name": "Uptime" },
+      "last_reboot":           { "name": "Last reboot" }
+    },
+    "binary_sensor": {
+      "online":              { "name": "Online" },
+      "dhcp_enabled":        { "name": "DHCP" },
+      "snmp_agent_enabled":  { "name": "SNMP agent" },
+      "secure_mode_enabled": { "name": "Secure mode" },
+      "dot1x_enabled":       { "name": "802.1X" }
+    }
+  }
+}
