@@ -98,7 +98,8 @@ class AeosInventoryConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class AeosInventoryOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
+        # HA 2026.x provides self.config_entry on the base class; do not assign it here.
+        pass
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
