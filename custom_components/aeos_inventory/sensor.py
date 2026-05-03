@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -45,6 +46,25 @@ def _to_int(value: Any) -> int | None:
         return int(str(value).replace(",", ""))
     except (TypeError, ValueError):
         return None
+
+
+def _to_datetime(value: Any) -> datetime | None:
+    """Parse an ISO-8601 string (with or without trailing Z) into a tz-aware datetime."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    s = str(value).strip()
+    if not s:
+        return None
+    # Python <3.11 doesn't accept the trailing 'Z' in fromisoformat.
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(s)
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -158,7 +178,7 @@ SENSORS: tuple[AeosSensorDescription, ...] = (
         key="last_reboot",
         translation_key="last_reboot",
         device_class=SensorDeviceClass.TIMESTAMP,
-        value_fn=lambda d: d.get("last_reboot"),
+        value_fn=lambda d: _to_datetime(d.get("last_reboot")),
     ),
 )
 
