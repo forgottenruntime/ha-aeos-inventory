@@ -37,6 +37,7 @@ class AeosInventoryCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]])
         )
         self._client = client
         self.entry = entry
+        self._consecutive_failures = 0
 
     async def _async_update_data(self) -> dict[str, dict[str, Any]]:
         try:
@@ -44,8 +45,18 @@ class AeosInventoryCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]])
         except AeosInventoryAuthError as err:
             raise UpdateFailed(f"Authentication error: {err}") from err
         except AeosInventoryConnectionError as err:
+            self._consecutive_failures += 1
+            # Tolerate up to 2 transient failures (~10 min at 5min interval) before
+            # marking entities unavailable; the API server can stall on slow AEpu SSH.
+            if self._consecutive_failures <= 2 and self.data:
+                _LOGGER.warning(
+                    "Transient connection error (%s), keeping last data (failure %d/2)",
+                    err, self._consecutive_failures,
+                )
+                return self.data
             raise UpdateFailed(f"Connection error: {err}") from err
 
+        self._consecutive_failures = 0
         result: dict[str, dict[str, Any]] = {}
         for d in devices:
             key = (

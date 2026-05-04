@@ -32,7 +32,7 @@ class AeosInventoryClient:
         *,
         use_ssl: bool = False,
         verify_ssl: bool = True,
-        timeout: int = 30,
+        timeout: int = 90,
     ) -> None:
         scheme = "https" if use_ssl else "http"
         self._base = f"{scheme}://{host}:{port}"
