@@ -48,14 +48,16 @@
       "memory_total_kb":       { "name": "Memory total" },
       "disk_free_kb":          { "name": "Disk free" },
       "uptime_seconds":        { "name": "Uptime" },
-      "last_reboot":           { "name": "Last reboot" }
+      "last_reboot":           { "name": "Last reboot" },
+      "last_update":           { "name": "Last successful update" }
     },
     "binary_sensor": {
       "online":              { "name": "Online" },
       "dhcp_enabled":        { "name": "DHCP" },
       "snmp_agent_enabled":  { "name": "SNMP agent" },
       "secure_mode_enabled": { "name": "Secure mode" },
-      "dot1x_enabled":       { "name": "802.1X" }
+      "dot1x_enabled":       { "name": "802.1X" },
+      "api_connected":       { "name": "API connected" }
     }
   }
 }

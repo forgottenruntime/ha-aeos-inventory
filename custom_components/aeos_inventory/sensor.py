@@ -20,6 +20,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 from .coordinator import AeosInventoryCoordinator
 from .entity import AeosInventoryEntity
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .const import MANUFACTURER
 
 
 def _kb_free(value: str | None) -> int | None:
@@ -190,6 +193,9 @@ async def async_setup_entry(
 ) -> None:
     coordinator: AeosInventoryCoordinator = hass.data[DOMAIN][entry.entry_id]
 
+    # Hub-level "Last update" timestamp.
+    async_add_entities([AeosLastUpdateSensor(coordinator, entry)])
+
     known_keys: set[str] = set()
 
     @callback
@@ -223,3 +229,38 @@ class AeosSensor(AeosInventoryEntity, SensorEntity):
     @property
     def native_value(self) -> Any:
         return self.entity_description.value_fn(self._device)
+
+
+class AeosLastUpdateSensor(CoordinatorEntity[AeosInventoryCoordinator], SensorEntity):
+    """Timestamp of the last successful inventory poll."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "last_update"
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+
+    def __init__(
+        self,
+        coordinator: AeosInventoryCoordinator,
+        entry: ConfigEntry,
+    ) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_last_update"
+
+    @property
+    def available(self) -> bool:
+        return True
+
+    @property
+    def native_value(self) -> datetime | None:
+        return getattr(self.coordinator, "last_update_success_time", None)
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self._entry.entry_id}_api")},
+            name=f"AEOS Inventory API ({self._entry.title})",
+            manufacturer=MANUFACTURER,
+            model="InventoryAPI",
+            entry_type=DeviceEntryType.SERVICE,
+        )
