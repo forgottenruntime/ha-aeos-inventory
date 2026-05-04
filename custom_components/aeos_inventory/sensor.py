@@ -86,7 +86,6 @@ SENSORS: tuple[AeosSensorDescription, ...] = (
         key="mac",
         translation_key="mac",
         icon="mdi:network",
-        entity_registry_enabled_default=False,
         value_fn=lambda d: d.get("mac"),
     ),
     AeosSensorDescription(
@@ -117,7 +116,6 @@ SENSORS: tuple[AeosSensorDescription, ...] = (
         key="boot_firmware_version",
         translation_key="boot_firmware_version",
         icon="mdi:chip",
-        entity_registry_enabled_default=False,
         value_fn=lambda d: d.get("boot_firmware_version"),
     ),
     AeosSensorDescription(
@@ -136,7 +134,6 @@ SENSORS: tuple[AeosSensorDescription, ...] = (
         key="ntp_server",
         translation_key="ntp_server",
         icon="mdi:clock-outline",
-        entity_registry_enabled_default=False,
         value_fn=lambda d: d.get("ntp_server"),
     ),
     AeosSensorDescription(
@@ -158,7 +155,6 @@ SENSORS: tuple[AeosSensorDescription, ...] = (
         translation_key="memory_total_kb",
         device_class=SensorDeviceClass.DATA_SIZE,
         native_unit_of_measurement=UnitOfInformation.KIBIBYTES,
-        entity_registry_enabled_default=False,
         value_fn=lambda d: _kb_total(d.get("memory_total_free_kb")),
     ),
     AeosSensorDescription(

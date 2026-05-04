@@ -49,7 +49,6 @@ BINARY_SENSORS: tuple[AeosBinaryDescription, ...] = (
     AeosBinaryDescription(
         key="snmp_agent_enabled",
         translation_key="snmp_agent_enabled",
-        entity_registry_enabled_default=False,
         value_fn=lambda d: _truthy(d.get("snmp_agent_enabled")),
     ),
     AeosBinaryDescription(
