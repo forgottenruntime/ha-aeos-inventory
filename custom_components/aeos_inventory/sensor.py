@@ -14,7 +14,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfInformation, UnitOfTime
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -190,11 +190,22 @@ async def async_setup_entry(
 ) -> None:
     coordinator: AeosInventoryCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[SensorEntity] = []
-    for device_key in coordinator.data or {}:
-        for desc in SENSORS:
-            entities.append(AeosSensor(coordinator, device_key, desc))
-    async_add_entities(entities)
+    known_keys: set[str] = set()
+
+    @callback
+    def _add_new_devices() -> None:
+        new_entities: list[SensorEntity] = []
+        for device_key in coordinator.data or {}:
+            if device_key in known_keys:
+                continue
+            known_keys.add(device_key)
+            for desc in SENSORS:
+                new_entities.append(AeosSensor(coordinator, device_key, desc))
+        if new_entities:
+            async_add_entities(new_entities)
+
+    _add_new_devices()
+    entry.async_on_unload(coordinator.async_add_listener(_add_new_devices))
 
 
 class AeosSensor(AeosInventoryEntity, SensorEntity):
